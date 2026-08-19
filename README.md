@@ -1,6 +1,6 @@
 ## LigKit: Ligand Preparation Pipeline for Molecular Docking
 
-🧪 A fully parallelised, 11-stage Colab notebook (`LigKit.ipynb`) that takes a raw multi-ligand SDF (or ZIP of SDFs) through deduplication, standardization, tautomer and protonation-state enumeration, stereoisomer enumeration, 3D embedding and minimization, and export to both a custom RDKit-native SYBYL MOL2 writer and Meeko-based PDBQT — producing a docking-ready ligand library for AutoDock-GPU. Supports multi-library mode (queue and prepare successive SDFs in one Colab session) and includes a built-in self-test suite that validates atom typing and charge conservation before any library is committed to a production run.
+🧪 A fully parallelised, 11-stage Colab notebook (`LigKit.ipynb`) that takes a raw multi-ligand SDF (or ZIP of SDFs) through deduplication, standardization, tautomer and protonation-state enumeration, stereoisomer enumeration, 3D embedding and minimization, and export to both a custom RDKit-native SYBYL MOL2 writer and Meeko-based PDBQT - producing a docking-ready ligand library for AutoDock-GPU. Supports multi-library mode (queue and prepare successive SDFs in one Colab session) and includes a built-in self-test suite that validates atom typing and charge conservation before any library is committed to a production run.
 
 ## Pipeline Overview
 
