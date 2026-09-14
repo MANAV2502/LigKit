@@ -31,6 +31,65 @@
 
 **Output:** `<input_name>_prepared/` containing every intermediate stage folder, a `pipeline_report.txt` provenance log, and a final combined ZIP.
 
+## Running `ligkit.py` Locally on Linux
+
+The same 11-stage pipeline ships as a standalone CLI script (`ligkit.py`) for anyone who wants to run it off-Colab — on a workstation, an HPC node, or inside a WSL/Docker environment. It carries no notebook-specific code; the stage logic, tool assignment, and output layout are identical to `LigKit.ipynb`. The steps below set it up cleanly on Ubuntu/Debian-based systems.
+
+### 1. Install Open Babel (system package)
+
+`ligkit.py` shells out to the `obabel` binary for Stage 1 (SDF splitting) and as the Stage 11 PDBQT fallback, so it must be resolvable on `$PATH` — a `pip install` alone will not provide it:
+
+```bash
+sudo apt update
+sudo apt install -y openbabel
+obabel -V   # confirms the binary is on PATH
+```
+
+### 2. Create and activate an isolated virtual environment
+
+Keeping the pipeline's dependencies out of the system interpreter avoids version collisions with other cheminformatics projects on the same machine:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+python -m pip install --upgrade pip
+```
+
+### 3. Install the Python dependencies
+
+RDKit (Stages 2–4 and 7–10) and Dimorphite-DL (Stage 5) cover the core chemistry. Meeko (Stage 11's Vina-native PDBQT export) additionally needs **Gemmi** and **SciPy** as pip-installable packages in their own right — install all five explicitly rather than relying on Meeko to resolve them on its own:
+
+```bash
+pip install rdkit dimorphite-dl meeko gemmi scipy
+```
+
+<details>
+<summary>Expected environment footprint</summary>
+
+Once installed, `venv/lib/python3.13/site-packages/` should contain, at minimum: `rdkit`, `dimorphite_dl`, `meeko`, `gemmi`, `scipy`, plus `numpy`, `loguru`, and `pillow` (`PIL`) pulled in alongside them — each paired with its own `*.dist-info` metadata folder. This is the same dependency set recorded by `pipeline_report.txt` under "Toolchain versions" at the end of every run.
+
+</details>
+
+### 4. Configure and run
+
+1. Open `ligkit.py` in a text editor and edit the **USER SETTINGS** block near the top:
+   - `INPUT_PATH` — full path to your input `.sdf` or `.zip` of SDFs (the only mandatory field).
+   - `OUTPUT_DIR` — full path to where the `<input_name>_prepared/` folder should be written; leave `""` to place it next to the input file.
+   - All remaining parameters (`MAX_WORKERS`, `DEDUP_LEVEL`, tautomer/protonation/stereoisomer limits, gen3D and MMFF minimization settings, etc.) are optional — change any of them to suit your library and hardware, or leave them at their defaults.
+2. Make the script executable (one-time step):
+   ```bash
+   chmod +x ligkit.py
+   ```
+3. Run it from inside the activated virtual environment:
+   ```bash
+   ./ligkit.py
+   # or, without chmod:
+   python3 ligkit.py
+   ```
+4. Answer the `yes`/`no` prompts to choose which of the 11 stages to execute for this run.
+
+Output lands in `<input_name>_prepared/` next to the input file (or under `OUTPUT_DIR` if set), with the same stage-folder layout, `pipeline_report.txt`, and combined ZIP described above — deactivate the environment with `deactivate` when finished.
+
 ## Citations
 
 Tools invoked by this pipeline should be cited alongside LigKit itself when reporting results derived from it.
